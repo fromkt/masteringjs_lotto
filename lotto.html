@@ -1,0 +1,58 @@
+<html>
+    <head></head>
+    <body>
+        <script>
+            const lottos = [];
+            let piece = 0;
+            function buyLottos( pay) {
+                const min = 1 , max = 45;
+                if( isNaN( pay)) return false;
+                piece = pay /1000;
+
+                if( piece <1) return false;
+
+                for( let i=1; i <= piece; i++) {
+                    const lotto = [];
+                    while( lotto.length < 6) {
+                        let v = rnd();
+                        if( lotto.indexOf( v) === -1)
+                            lotto.push( v);
+                    }
+                    lottos.push( { lotto : lotto.sort((a,b)=> a-b) , lunky : 0});
+                }
+                function rnd () {
+                    return Math.floor( Math.random() * (max-min) + min);
+                }
+                console.log( lottos);
+            }
+            function setLuckyNumber( ...lucky){
+                if( lucky.length !== 6) return false;
+                let total = 0;
+                const result = [
+                    { n: 3 , amount:5000 , qty : 0},
+                    { n: 4 , amount:50000 , qty : 0},
+                    { n: 5 , amount:1500000 , qty : 0},
+                    { n: 6 , amount:2000000000 , qty : 0}
+                ];
+                console.log('당첨 통계');
+                console.log('---------');
+                lottos.forEach( function ( obj){
+                    lucky.forEach( function ( n) {
+                        obj.lotto.indexOf( n) !== -1 && obj.lunky++;                    
+                    });
+                    if( obj.lunky >= 3 && result[ obj.lunky - 3] !== undefined)
+                        result[ obj.lunky - 3]['qty']++;
+                });
+                result.forEach( function(obj){
+                    console.log( obj.n+'개 일치 ('+obj.amount+'원)- ' + obj.qty +'개');
+                    total += obj.amount * obj.qty;
+                });
+                 
+                console.log('나의 수익률은 '+ (total / (piece*1000) * 100) +'%입니다.');
+            }
+            buyLottos(14000);
+            setLuckyNumber( 1,2,3,4,5,6);
+            
+        </script>        
+    </body>
+</html>
