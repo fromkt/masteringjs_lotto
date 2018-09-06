@@ -3,56 +3,72 @@
     <body>
         <script>
             const lottos = [];
-            let piece = 0;
+            let piece = 0;//로또 발급 수량
+            const min = 1 , max = 45;//로또 최소번호 , 최대 번호
+
+            //로또 발급
+            function getLottoNumber(){
+                const lotto_list = [];
+                while( lotto_list.length < 6) {
+                    let random_number = randomNumber();
+                    if( lotto_list.indexOf( random_number) === -1)
+                        lotto_list.push( random_number);
+                }
+                lottos.push( { lotto : lotto_list.sort((a,b)=> a-b) , lucky_count : 0});
+                console.log( lotto_list);
+            }
+
+            //임의 번호 생성
+            function randomNumber () {
+                return Math.floor( Math.random() * (max-min) + min);
+            }
+
+            //로또 구입
             function buyLottos( pay) {
-                const min = 1 , max = 45;
                 if( isNaN( pay)) return false;
-                piece = pay /1000;
+                piece = Math.floor( pay /1000);
 
                 if( piece <1) return false;
 
                 for( let i=1; i <= piece; i++) {
-                    const lotto = [];
-                    while( lotto.length < 6) {
-                        let v = rnd();
-                        if( lotto.indexOf( v) === -1)
-                            lotto.push( v);
-                    }
-                    lottos.push( { lotto : lotto.sort((a,b)=> a-b) , lunky : 0});
+                    getLottoNumber();
                 }
-                function rnd () {
-                    return Math.floor( Math.random() * (max-min) + min);
-                }
-                console.log( lottos);
             }
+
+            //당첨 확인
             function setLuckyNumber( ...lucky){
                 if( lucky.length !== 6) return false;
                 let total = 0;
                 const result = [
-                    { n: 3 , amount:5000 , qty : 0},
-                    { n: 4 , amount:50000 , qty : 0},
-                    { n: 5 , amount:1500000 , qty : 0},
-                    { n: 6 , amount:2000000000 , qty : 0}
+                    { hit: 0 , amount:0 , quantity : 0},
+                    { hit: 1 , amount:0 , quantity : 0},
+                    { hit: 2 , amount:0 , quantity : 0},
+                    { hit: 3 , amount:5000 , quantity : 0},
+                    { hit: 4 , amount:50000 , quantity : 0},
+                    { hit: 5 , amount:1500000 , quantity : 0},
+                    { hit: 6 , amount:2000000000 , quantity : 0}
                 ];
                 console.log('당첨 통계');
                 console.log('---------');
-                lottos.forEach( function ( obj){
+                lottos.forEach( function ( lotto_piece){
                     lucky.forEach( function ( n) {
-                        obj.lotto.indexOf( n) !== -1 && obj.lunky++;                    
+                        lotto_piece.lotto.indexOf( n) !== -1 && lotto_piece.lucky_count++;                    
                     });
-                    if( obj.lunky >= 3 && result[ obj.lunky - 3] !== undefined)
-                        result[ obj.lunky - 3]['qty']++;
+
+                    if( result[ lotto_piece.lucky_count] !== undefined && result[ lotto_piece.lucky_count]['amount'] > 0 )
+                        result[ lotto_piece.lucky_count]['quantity']++;
                 });
-                result.forEach( function(obj){
-                    console.log( obj.n+'개 일치 ('+obj.amount+'원)- ' + obj.qty +'개');
-                    total += obj.amount * obj.qty;
+
+                result.forEach( function( result_hit){
+                    if( result_hit.amount <= 0 ) return true;
+                    console.log( result_hit.hit+'개 일치 ('+result_hit.amount+'원)- ' + result_hit.quantity +'개');
+                    total += result_hit.amount * result_hit.quantity;
                 });
-                 
+
                 console.log('나의 수익률은 '+ (total / (piece*1000) * 100) +'%입니다.');
             }
             buyLottos(14000);
             setLuckyNumber( 1,2,3,4,5,6);
-            
-        </script>        
+        </script>
     </body>
 </html>
